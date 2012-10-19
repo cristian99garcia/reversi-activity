@@ -21,9 +21,7 @@ import math
 import os
 import pygame
 import random
-
-import olpcgames
-from olpcgames.util import data_path
+import gtk
 
 
 # Immutable Globals / Settings
@@ -42,9 +40,8 @@ cell_padding = 4
 player_numbers_to_piece_names = [None, "White", "Black"]
 
 
-
 def load_sound(relative_path_name):
-    full_path_name = data_path(relative_path_name)
+    full_path_name = os.path.abspath(os.path.join('data', relative_path_name))
     #full_path_name = os.path.join("data", relative_path_name)
     print "load_sound(\"%s\") - full_path_name = \"%s\"" % (str(relative_path_name), str(full_path_name))
     sound = pygame.mixer.Sound(full_path_name)
@@ -641,54 +638,12 @@ class ReversiModel:
 #===============================================================================
 
 class ReversiController:
-    def __init__(self):
-        global screen_size
-        
-        # Seed random number generator
-        random.seed()
-        
-        # Init pygame
-        pygame.init()
 
-        # Create clock
+    def __init__(self):
+
+        random.seed()
         self.clock = pygame.time.Clock()
-        
-        # Create screen
-        self.screen = pygame.display.set_mode(screen_size) #, pygame.FULLSCREEN)
-        
-        # Init mixer
-        self.use_sounds = True
-        sound_info = None
-        if pygame.mixer:
-            #pygame.mixer.init(22050,-16,1,1024)
-            sound_info = pygame.mixer.get_init()
-            if sound_info:
-                self.use_sounds = True
-        
-        print "ReversiController.__init__() - use_sounds = %s" % self.use_sounds
-        if sound_info:
-            print "ReversiController.__init__() - sound_info = %s" % str(sound_info)
-        
-        # Load sounds
-        if self.use_sounds:
-            self.sounds = {}
-            self.sounds["clapping"] = load_sound("clapping.ogg")
-            self.sounds["putdownflip"] = load_sound("putdownflip.ogg")
-            self.sounds["putdownflip2"] = load_sound("putdownflip2.ogg")
-            self.sounds["putdownflip3"] = load_sound("putdownflip3.ogg")
-            self.sounds["putdownflip4"] = load_sound("putdownflip4.ogg")
-            self.sounds["putdownflip5"] = load_sound("putdownflip5.ogg")
-            self.sounds["putdownflip5a"] = load_sound("putdownflip5a.ogg")
-        
-        # Create board view
-        self.view = ReversiView(self, screen_size, (num_columns, num_rows))
-        
-        # Create board model
-        self.model = ReversiModel((num_columns, num_rows))
-        
-        # Setup start state
-        self.set_state("StartGame")
-        
+     
     def get_state(self):
         return self.state_name
     
@@ -768,8 +723,47 @@ class ReversiController:
         pass
         
     def run(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode(screen_size) #, pygame.FULLSCREEN)
+        
+        # Init mixer
+        self.use_sounds = True
+        sound_info = None
+        if pygame.mixer:
+            #pygame.mixer.init(22050,-16,1,1024)
+            sound_info = pygame.mixer.get_init()
+            if sound_info:
+                self.use_sounds = True
+        
+        print "ReversiController.__init__() - use_sounds = %s" % self.use_sounds
+        if sound_info:
+            print "ReversiController.__init__() - sound_info = %s" % str(sound_info)
+        
+        # Load sounds
+        if self.use_sounds:
+            self.sounds = {}
+            self.sounds["clapping"] = load_sound("clapping.ogg")
+            self.sounds["putdownflip"] = load_sound("putdownflip.ogg")
+            self.sounds["putdownflip2"] = load_sound("putdownflip2.ogg")
+            self.sounds["putdownflip3"] = load_sound("putdownflip3.ogg")
+            self.sounds["putdownflip4"] = load_sound("putdownflip4.ogg")
+            self.sounds["putdownflip5"] = load_sound("putdownflip5.ogg")
+            self.sounds["putdownflip5a"] = load_sound("putdownflip5a.ogg")
+        
+        # Create board view
+        self.view = ReversiView(self, screen_size, (num_columns, num_rows))
+        
+        # Create board model
+        self.model = ReversiModel((num_columns, num_rows))
+        
+        # Setup start state
+        self.set_state("StartGame")
+
         while True:
             # Process events
+            while gtk.events_pending():
+                gtk.main_iteration()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
