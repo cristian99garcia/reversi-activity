@@ -1,0 +1,7 @@
+[Activity]
+name = Reversi
+activity_version = 1
+host_version = 1
+service_name = net.coderanger.olpc.reversi
+icon = activity-tictactoe
+class = activity.ReversiActivity
