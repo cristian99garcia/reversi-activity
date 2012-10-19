@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Reversi.py - An implementation of Reversi for OLPC laptops.
 # Copyright (C) 2007 David Lee Ludwig <dludwig at pobox dot com>
