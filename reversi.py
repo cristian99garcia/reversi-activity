@@ -43,7 +43,7 @@ player_numbers_to_piece_names = [None, "White", "Black"]
 def load_sound(relative_path_name):
     full_path_name = os.path.abspath(os.path.join('data', relative_path_name))
     #full_path_name = os.path.join("data", relative_path_name)
-    print "load_sound(\"%s\") - full_path_name = \"%s\"" % (str(relative_path_name), str(full_path_name))
+    #print "load_sound(\"%s\") - full_path_name = \"%s\"" % (str(relative_path_name), str(full_path_name))
     sound = pygame.mixer.Sound(full_path_name)
     return sound
 
@@ -76,6 +76,7 @@ class CellView(pygame.sprite.Sprite):
         piece_width = self.rect.width * 0.8
         border_size = self.rect.width * 0.05
         pos = (self.rect.centerx - self.rect.left, self.rect.centery - self.rect.top)
+        #Colors of black and white circles
         if color == "Black":
             pygame.draw.circle(self.image, (0, 0, 0), pos, int(piece_width / 2))
         elif color == "White":
@@ -648,7 +649,7 @@ class ReversiController:
         return self.state_name
     
     def set_state(self, state_name):
-        print "set_state(\"%s\")" % state_name
+        #print "set_state(\"%s\")" % state_name
         self.state_name = state_name
         if state_name == "StartGame":
             self.view.restart_button.set_visible(False)
@@ -735,9 +736,8 @@ class ReversiController:
             if sound_info:
                 self.use_sounds = True
         
-        print "ReversiController.__init__() - use_sounds = %s" % self.use_sounds
         if sound_info:
-            print "ReversiController.__init__() - sound_info = %s" % str(sound_info)
+            print "sound_info = %s" % str(sound_info)
         
         # Load sounds
         if self.use_sounds:
@@ -793,16 +793,10 @@ class ReversiController:
 #===============================================================================
 
 def main():
-    print "main() - START"
-    
-    print "main() - cwd = %s" % os.getcwd()
-    
+   
     # Create primary controller and launch it.
     primary_controller = ReversiController()
     primary_controller.run()
-
-    print "main() - END"
-
 
 if __name__=="__main__":
     main()
