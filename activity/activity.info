@@ -2,6 +2,6 @@
 name = Reversi
 activity_version = 2
 bundle_id = net.coderanger.olpc.reversi
-icon = activity-tictactoe
+icon = activity-reversi
 exec = sugar-activity activity.ReversiActivity
 license = GPLv3
