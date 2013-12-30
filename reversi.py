@@ -31,6 +31,7 @@ from gettext import gettext as _
 # Immutable Globals / Settings
 screen_size = (1200, 825)
 background_color = (255, 255, 255)
+background_board_color = (255, 255, 255)
 cell_padding_color = (0, 0, 0)
 available_cell_color = (0, 0, 0)
 player_view_outline_color = (0, 0, 0)
@@ -40,6 +41,9 @@ player_indicator_size = (8, 32)
 num_columns = 8
 num_rows = 8
 cell_padding = 4
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 player_numbers_to_piece_names = [None, "White", "Black"]
 
@@ -71,25 +75,28 @@ class CellView(pygame.sprite.Sprite):
 
     def show_piece(self, color):
         """Shows a piece in the cell.  Set color to "Black" or "White"."""
-        global background_color
+        global background_board_color
 
-        self.image.fill(background_color)
+        self.image.fill(background_board_color)
 
         piece_width = self.rect.width * 0.8
         border_size = self.rect.width * 0.05
         pos = (self.rect.centerx - self.rect.left, self.rect.centery - self.rect.top)
         #Colors of black and white circles
         if color == "Black":
-            pygame.draw.circle(self.image, (0, 0, 0), pos, int(piece_width / 2))
+            pygame.draw.circle(self.image, BLACK, pos, int(piece_width / 2))
         elif color == "White":
-            pygame.draw.circle(self.image, (0, 0, 0), pos, int(piece_width / 2), int(border_size))
+            if WHITE == (255, 255, 255):
+                pygame.draw.circle(self.image, (0, 0, 0), pos, int(piece_width / 2), int(border_size))
+            else:
+                pygame.draw.circle(self.image, WHITE, pos, int(piece_width / 2))
     
     def show_no_piece(self):
         """Clears the cell, showing no piece at all."""
-        global background_color
+        global background_board_color
 
         self.image = pygame.Surface(self.rect.size)
-        self.image.fill(background_color)
+        self.image.fill(background_board_color)
     
     def show_as_available(self, piece_color_name = "Black"):
         #self.draw_corners()
@@ -149,19 +156,24 @@ class BoardView:
         self.controller = controller
         
         self.top_left = top_left
-        
+        self.grid_size = grid_size
         self.num_columns = grid_size[0]
         self.num_rows = grid_size[1]
-        
+        self.size_in_pixels = size_in_pixels
+
         # Init cells
         cell_width = (size_in_pixels[0] - (cell_padding * (grid_size[0] + 1))) / grid_size[0]
         cell_height = (size_in_pixels[1] - (cell_padding * (grid_size[1] + 1))) / grid_size[1]
-        cell_size = (cell_width, cell_height)
-        self.init_cell_views(cell_size, grid_size)
+        self.cell_size = (cell_width, cell_height)
+
+        self.background = pygame.Surface(self.size_in_pixels)
+        self.init_cell_views(self.cell_size, self.grid_size)
+
+        self.redraw_background()
         
+    def redraw_background(self):
         # Draw board background
-        self.background = pygame.Surface(size_in_pixels)
-        self.draw_board_background(self.background, cell_size, grid_size)
+        self.draw_board_background(self.cell_size, self.grid_size)
 
     def init_cell_views(self, cell_size, grid_size):
         # Create a group to store the cells in.
@@ -187,20 +199,22 @@ class BoardView:
             
             self.cell_view_grid.append(grid_column)
     
-    def draw_board_background(self, surface, cell_size, grid_size):
-        surface.fill(background_color)
+    def draw_board_background(self, cell_size, grid_size):
+        # tablero
+        background_color = (100, 100, 100)
+        self.background.fill(background_color)
         
         drawn_height = cell_padding + (grid_size[1] * (cell_padding + cell_size[1]))
         tmp_rect = pygame.Rect(0, 0, cell_padding, drawn_height)
         for column_index in range(grid_size[0] + 1):
             tmp_rect.left = column_index * (cell_padding + cell_size[0])
-            surface.fill(cell_padding_color, tmp_rect)
+            self.background.fill(cell_padding_color, tmp_rect)
     
         drawn_width = cell_padding + (grid_size[0] * (cell_padding + cell_size[0]))
         tmp_rect = pygame.Rect(0, 0, drawn_width, cell_padding)
         for row_index in range(grid_size[0] + 1):
             tmp_rect.top = row_index * (cell_padding + cell_size[1])
-            surface.fill(cell_padding_color, tmp_rect)
+            self.background.fill(cell_padding_color, tmp_rect)
     
     def get_num_columns(self):
         return self.num_columns
@@ -330,9 +344,12 @@ class PlayerView:
         image.fill(background_color)
 
         if piece_name == "Black":
-            pygame.draw.circle(image, (0, 0, 0), (width/2, width/2), width/2)
+            pygame.draw.circle(image, BLACK, (width/2, width/2), width/2)
         elif piece_name == "White":
-            pygame.draw.circle(image, (0, 0, 0), (width/2, width/2), width/2, 2)
+            if WHITE == (255, 255, 255):
+                pygame.draw.circle(image, (0, 0, 0), (width/2, width/2), width/2, 2)
+            else:
+                pygame.draw.circle(image, WHITE, (width/2, width/2), width/2)
             
         return image
         
@@ -413,6 +430,9 @@ class ReversiView:
         for player_number in [1, 2]:
             player_view = self.player_views[player_number]
             player_view.update_from_model(model)
+
+    def redraw_back(self):
+        self.board_view.redraw_background()
 
     def draw(self, surface):
         surface.fill(background_color)
@@ -724,6 +744,32 @@ class ReversiController:
         #piece_color_name = self.model.
         #self.model.get_board_model().get_all_toggleable_cells()
         pass
+
+    def set_player1_color(self, color):
+        global WHITE
+        WHITE = color
+        self.view.update_from_model(self.model)
+
+    def set_player2_color(self, color):
+        global BLACK
+        BLACK = color
+        self.view.update_from_model(self.model)
+
+    def set_line_color(self, color):
+        global cell_padding_color
+        cell_padding_color = color
+        self.view.redraw_back()
+
+    def set_back_color(self, color):
+        global background_color
+        background_color = color
+        self.view.redraw_back()
+        self.view.update_from_model(self.model)
+
+    def set_board_color(self, color):
+        global background_board_color
+        background_board_color = color
+        self.view.update_from_model(self.model)
         
     def run(self):
         global screen_size
