@@ -11,6 +11,7 @@ from sugar.activity.widgets import ActivityToolbarButton
 from sugar.activity.widgets import StopButton
 from sugar.graphics.colorbutton import ColorToolButton
 from sugar.graphics.toolbarbox import ToolbarButton
+from sugar.graphics.toolbutton import ToolButton
 
 import sugargame.canvas
 
@@ -37,7 +38,21 @@ class ReversiActivity(activity.Activity):
         toolbar_box.toolbar.insert(activity_button, -1)
         activity_button.show()
 
+        separator = gtk.SeparatorToolItem()
+        toolbar_box.toolbar.insert(separator, -1)
+        separator.show()
+
         self.build_colors_toolbar(toolbar_box)
+
+        separator = gtk.SeparatorToolItem()
+        toolbar_box.toolbar.insert(separator, -1)
+        separator.show()
+
+        # new game button
+        new_game = ToolButton('new-game')
+        new_game.connect('clicked', self._new_game)
+        new_game.set_tooltip(_('New game'))
+        toolbar_box.toolbar.insert(new_game, -1)
 
         separator = gtk.SeparatorToolItem()
         toolbar_box.toolbar.insert(separator, -1)
@@ -57,6 +72,7 @@ class ReversiActivity(activity.Activity):
         item.add(self.current_label)
         toolbar_box.toolbar.insert(item, -1)
 
+        # separator and stop
         separator = gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
@@ -185,6 +201,9 @@ class ReversiActivity(activity.Activity):
                 icon_name='toolbar-colors')
         toolbox.toolbar.insert(colors_button, -1)
         colors_button.show()
+
+    def _new_game(self, widget):
+        self.game.handle_restart_button_click()
 
     def color_player1_change(self, widget, pspec):
         color = widget.get_color()
