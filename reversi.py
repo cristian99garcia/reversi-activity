@@ -578,7 +578,8 @@ class PlayerModel:
 
 
 class ReversiModel:
-    def __init__(self, grid_size):
+    def __init__(self, parent, grid_size):
+        self.parent = parent
         self.grid_size = grid_size
 
         self.current_player = 1
@@ -611,7 +612,8 @@ class ReversiModel:
     
     def set_current_player(self, player_number):
         self.current_player = player_number
-        
+        self.parent.set_current_player(self.current_player)
+
     def get_active_player_number(self):
         return self.current_player
         
@@ -663,8 +665,8 @@ class ReversiModel:
 
 class ReversiController:
 
-    def __init__(self):
-
+    def __init__(self, parent=None):
+        self.parent = parent
         random.seed()
         self.clock = pygame.time.Clock()
      
@@ -770,6 +772,10 @@ class ReversiController:
         global background_board_color
         background_board_color = color
         self.view.update_from_model(self.model)
+
+    def set_current_player(self, player):
+        if self.parent is not None:
+            self.parent.set_current_player(player)
         
     def run(self):
         global screen_size
@@ -808,7 +814,7 @@ class ReversiController:
         self.view = ReversiView(self, screen_size, (num_columns, num_rows))
         
         # Create board model
-        self.model = ReversiModel((num_columns, num_rows))
+        self.model = ReversiModel(self, (num_columns, num_rows))
         
         # Setup start state
         self.set_state("StartGame")

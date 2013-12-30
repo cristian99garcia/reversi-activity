@@ -21,7 +21,7 @@ class ReversiActivity(activity.Activity):
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
 
-        self.game = reversi.ReversiController()
+        self.game = reversi.ReversiController(self)
         self.build_toolbar()
         self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
         self.set_canvas(self._pygamecanvas)
@@ -38,6 +38,24 @@ class ReversiActivity(activity.Activity):
         activity_button.show()
 
         self.build_colors_toolbar(toolbar_box)
+
+        separator = gtk.SeparatorToolItem()
+        toolbar_box.toolbar.insert(separator, -1)
+        separator.show()
+
+        #current
+        item = gtk.ToolItem()
+        label = gtk.Label()
+        label.set_text(' %s ' % _('Current player:'))
+        item.add(label)
+        toolbar_box.toolbar.insert(item, -1)
+
+        #player
+        item = gtk.ToolItem()
+        self.current_label = gtk.Label()
+        self.current_label.set_text(' %s' % 1)
+        item.add(self.current_label)
+        toolbar_box.toolbar.insert(item, -1)
 
         separator = gtk.SeparatorToolItem()
         separator.props.draw = False
@@ -198,4 +216,7 @@ class ReversiActivity(activity.Activity):
         g = color.green *255 / 65535
         b = color.blue *255 / 65535
         return (r, g, b)
+
+    def set_current_player(self, player):
+        self.current_label.set_text(' %s' % player)
 
