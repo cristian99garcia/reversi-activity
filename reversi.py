@@ -25,6 +25,8 @@ import pygame
 import random
 import gtk
 
+from gettext import gettext as _
+
 
 # Immutable Globals / Settings
 screen_size = (1200, 825)
@@ -44,8 +46,6 @@ player_numbers_to_piece_names = [None, "White", "Black"]
 
 def load_sound(relative_path_name):
     full_path_name = os.path.abspath(os.path.join('data', relative_path_name))
-    #full_path_name = os.path.join("data", relative_path_name)
-    #print "load_sound(\"%s\") - full_path_name = \"%s\"" % (str(relative_path_name), str(full_path_name))
     sound = pygame.mixer.Sound(full_path_name)
     return sound
 
@@ -179,8 +179,7 @@ class BoardView:
 
             for row_index in range(grid_size[1]):
                 cell_rect.left = self.top_left[0] + cell_padding + (row_index * (cell_padding + cell_size[0]))
-                #print "%d, %d = (%d, %d, %d, %d)" % (column_index, row_index, cell_rect.left, cell_rect.top, cell_rect.right, cell_rect.bottom)
-
+                
                 copy_of_cell_rect = pygame.Rect(cell_rect)
                 cell_view = CellView(copy_of_cell_rect, (column_index, row_index))
                 self.cell_view_group.add(cell_view)
@@ -220,10 +219,8 @@ class BoardView:
     
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            #print event
             cell_view = self.get_cell_view_at_screen_coord(event.pos)
             if cell_view:
-                #print "cell view clicked: %d, %d" % (cell_view.board_coord[0], cell_view.board_coord[1])
                 self.controller.handle_cell_click(cell_view.board_coord)
                 return True
 
@@ -392,8 +389,13 @@ class RestartButton:
 class ReversiView:
     def __init__(self, controller, view_size, grid_size):
         # Setup board view
-        self.board_view = BoardView(controller, (250, 50), (700, 700), grid_size)
-        
+        use = (170 + 40 + 40) * 2
+        width = view_size[0] - use
+        height = view_size[1] - 75
+        size = min(width, height)
+
+        self.board_view = BoardView(controller, (250, 50), (size, size), grid_size)
+
         # Setup player views
         tmp_rect = pygame.Rect(40, 20, 170, 570)
         self.player_views = []
@@ -484,7 +486,6 @@ class BoardModel:
     def put_piece(self, piece_color_name, board_coord, toggle_cells,):
         cell_model = self.get_cell_model(board_coord[0], board_coord[1])
         cell_model.put_piece(piece_color_name)
-        #print "Piece Counts: White=%d, Black=%d" % (self.get_piece_count("White"), self.get_piece_count("Black"))
         if toggle_cells:
             cells_to_toggle = self.get_toggleable_cells_at_coord(piece_color_name, board_coord)
             for cell_model in cells_to_toggle:
@@ -651,7 +652,6 @@ class ReversiController:
         return self.state_name
     
     def set_state(self, state_name):
-        #print "set_state(\"%s\")" % state_name
         self.state_name = state_name
         if state_name == "StartGame":
             self.view.restart_button.set_visible(False)
@@ -726,20 +726,26 @@ class ReversiController:
         pass
         
     def run(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode(screen_size) #, pygame.FULLSCREEN)
-        
+        global screen_size
+        pygame.display.init()
+        self.screen = pygame.display.get_surface()
+        if not(self.screen):
+            info = pygame.display.Info()
+            screen_size = (info.current_w, info.current_h - 75)
+            self.screen = pygame.display.set_mode(screen_size) #, pygame.FULLSCREEN)
+            pygame.display.set_caption(_('Reversi'))
+        screen_size = self.screen.get_size()
+
         # Init mixer
         self.use_sounds = True
         sound_info = None
         if pygame.mixer:
+            pygame.mixer.init()
             #pygame.mixer.init(22050,-16,1,1024)
             sound_info = pygame.mixer.get_init()
             if sound_info:
                 self.use_sounds = True
-        
-        if sound_info:
-            print "sound_info = %s" % str(sound_info)
+                print "sound_info = %s" % str(sound_info)
         
         # Load sounds
         if self.use_sounds:

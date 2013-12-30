@@ -48,8 +48,3 @@ class ReversiActivity(activity.Activity):
         toolbar_box.toolbar.insert(stop_button, -1)
         stop_button.show()
 
-    def read_file(self, file_path):
-        pass
-
-    def write_file(self, file_path):
-        pass
