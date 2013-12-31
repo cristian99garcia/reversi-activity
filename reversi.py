@@ -370,9 +370,9 @@ class RestartButton:
     def update_image(self):
         self.image = pygame.Surface(self.rect.size)
         self.image.fill(background_color)
+        self.image.set_colorkey(background_color)
 
         top_ellipse_rect = pygame.Rect((0, 0), self.rect.size)
-        #pygame.draw.rect(self.image, (0, 0, 0), top_ellipse_rect, 1) # this line is for debugging only
         top_ellipse_rect.height = self.rect.height * 0.2
         pygame.draw.ellipse(self.image, (0, 0, 0), top_ellipse_rect, 3)
         
@@ -667,6 +667,7 @@ class ReversiController:
 
     def __init__(self, parent=None):
         self.parent = parent
+        self.sound_enable = True
         random.seed()
         self.clock = pygame.time.Clock()
      
@@ -710,11 +711,12 @@ class ReversiController:
                     self.set_state("EndGame")
                     
     def play_sound(self, sound_name):
-        if not self.sounds.has_key(sound_name):
-            print "ReversiController.play_sound(\"%s\") - WARNING, sound does not exist!" % str(sound_name)
-        else:
-            sound = self.sounds[sound_name]
-            sound.play()
+        if self.sound_enable:
+            if not self.sounds.has_key(sound_name):
+                print "ReversiController.play_sound(\"%s\") - WARNING, sound does not exist!" % str(sound_name)
+            else:
+                sound = self.sounds[sound_name]
+                sound.play()
     
     def play_put_down_piece_sound(self, num_cells_flipped):
         #possible_sound_names = ['putdownflip2', 'putdownflip3', 'putdownflip4', 'putdownflip5', 'putdownflip']
@@ -776,6 +778,9 @@ class ReversiController:
     def set_current_player(self, player):
         if self.parent is not None:
             self.parent.set_current_player(player)
+
+    def change_sound(self, sound):
+        self.sound_enable = sound
         
     def run(self):
         global screen_size

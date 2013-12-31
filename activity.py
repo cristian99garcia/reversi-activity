@@ -21,7 +21,7 @@ import reversi
 class ReversiActivity(activity.Activity):
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
-
+        self.sound_enable = True
         self.game = reversi.ReversiController(self)
         self.build_toolbar()
         self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
@@ -71,6 +71,15 @@ class ReversiActivity(activity.Activity):
         self.current_label.set_text(' %s' % 1)
         item.add(self.current_label)
         toolbar_box.toolbar.insert(item, -1)
+
+        separator = gtk.SeparatorToolItem()
+        toolbar_box.toolbar.insert(separator, -1)
+        separator.show()
+
+        sound_button = ToolButton('speaker-muted-100')
+        sound_button.set_tooltip(_('Sound'))
+        sound_button.connect('clicked', self.sound_control)
+        toolbar_box.toolbar.insert(sound_button, -1)
 
         # separator and stop
         separator = gtk.SeparatorToolItem()
@@ -238,4 +247,14 @@ class ReversiActivity(activity.Activity):
 
     def set_current_player(self, player):
         self.current_label.set_text(' %s' % player)
+
+    def sound_control(self, button):
+        self.sound_enable = not self.sound_enable
+        self.game.change_sound(self.sound_enable)
+        if not self.sound_enable:
+            button.set_icon('speaker-muted-000')
+            button.set_tooltip(_('No sound'))
+        else:
+            button.set_icon('speaker-muted-100')
+            button.set_tooltip(_('Sound'))
 
