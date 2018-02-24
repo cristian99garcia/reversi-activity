@@ -1,20 +1,22 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from gettext import gettext as _
-
-import gtk
-
-from sugar.activity import activity
-from sugar.graphics.toolbarbox import ToolbarBox
-from sugar.activity.widgets import ActivityToolbarButton
-from sugar.activity.widgets import StopButton
-from sugar.graphics.colorbutton import ColorToolButton
-from sugar.graphics.toolbarbox import ToolbarButton
-from sugar.graphics.toolbutton import ToolButton
-
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk
+from gi.repository import Gdk
+import sugargame
 import sugargame.canvas
-
+import pygame
+from sugar3.activity import activity
+from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.graphics.toolbarbox import ToolbarButton
+from sugar3.activity.widgets import ActivityToolbarButton
+from sugar3.graphics.toolbutton import ToolButton
+from sugar3.graphics.colorbutton import ColorToolButton
+from sugar3.activity.widgets import StopButton
+from gettext import gettext as _
 import reversi
 
 
@@ -23,11 +25,13 @@ class ReversiActivity(activity.Activity):
         activity.Activity.__init__(self, handle)
         self.sound_enable = True
         self.game = reversi.ReversiController(self)
+        self.game.canvas = sugargame.canvas.PygameCanvas(
+                 self,
+                 main=self.game.run,
+                 modules=[pygame.display, pygame.font])
+        self.set_canvas(self.game.canvas)
+        self.game.canvas.grab_focus()
         self.build_toolbar()
-        self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
-        self.set_canvas(self._pygamecanvas)
-        self._pygamecanvas.grab_focus()
-        self._pygamecanvas.run_pygame(self.game.run)
 
     def build_toolbar(self):
         toolbar_box = ToolbarBox()
@@ -38,13 +42,13 @@ class ReversiActivity(activity.Activity):
         toolbar_box.toolbar.insert(activity_button, -1)
         activity_button.show()
 
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         toolbar_box.toolbar.insert(separator, -1)
         separator.show()
 
         self.build_colors_toolbar(toolbar_box)
 
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         toolbar_box.toolbar.insert(separator, -1)
         separator.show()
 
@@ -54,25 +58,25 @@ class ReversiActivity(activity.Activity):
         new_game.set_tooltip(_('New game'))
         toolbar_box.toolbar.insert(new_game, -1)
 
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         toolbar_box.toolbar.insert(separator, -1)
         separator.show()
 
         #current
-        item = gtk.ToolItem()
-        label = gtk.Label()
+        item = Gtk.ToolItem()
+        label = Gtk.Label()
         label.set_text(' %s ' % _('Current player:'))
         item.add(label)
         toolbar_box.toolbar.insert(item, -1)
 
         #player
-        item = gtk.ToolItem()
-        self.current_label = gtk.Label()
+        item = Gtk.ToolItem()
+        self.current_label = Gtk.Label()
         self.current_label.set_text(' %s' % 1)
         item.add(self.current_label)
         toolbar_box.toolbar.insert(item, -1)
 
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         toolbar_box.toolbar.insert(separator, -1)
         separator.show()
 
@@ -82,7 +86,7 @@ class ReversiActivity(activity.Activity):
         toolbar_box.toolbar.insert(sound_button, -1)
 
         # separator and stop
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
         toolbar_box.toolbar.insert(separator, -1)
@@ -96,108 +100,108 @@ class ReversiActivity(activity.Activity):
 
     def build_colors_toolbar(self, toolbox):
 
-        colors_bar = gtk.Toolbar()
+        colors_bar = Gtk.Toolbar()
 
         ########################################################################
         # Point color
-        item = gtk.ToolItem()
-        label = gtk.Label()
+        item = Gtk.ToolItem()
+        label = Gtk.Label()
         label.set_text('%s ' % _('Player 1'))
         item.add(label)
         colors_bar.insert(item, -1)
 
         # select color
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
-        c = gtk.gdk.Color()
-        c.red = 65535
-        c.green = 65535
-        c.blue = 65535
+        c = Gdk.Color(
+            red = 65535,
+            green = 65535,
+            blue = 65535)
         _fill_color.set_color(c)
         _fill_color.connect('notify::color', self.color_player1_change)
         item.add(_fill_color)
         colors_bar.insert(item, -1)
 
         # Separator
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         colors_bar.insert(separator, -1)
         separator.show()
 
         ########################################################################
         # Back color
-        item = gtk.ToolItem()
-        label = gtk.Label()
+        item = Gtk.ToolItem()
+        label = Gtk.Label()
         label.set_text('%s ' % _('Player 2'))
         item.add(label)
         colors_bar.insert(item, -1)
 
         # select color
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
-        c = gtk.gdk.Color()
-        c.red = 0
-        c.green = 0
-        c.blue = 0
+        c = Gdk.Color(
+            red = 0,
+            green = 0,
+            blue = 0)
         _fill_color.set_color(c)
         _fill_color.connect('notify::color', self.color_player2_change)
         item.add(_fill_color)
         colors_bar.insert(item, -1)
 
         # Separator
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         colors_bar.insert(separator, -1)
         separator.show()
 
         ########################################################################
         # Line color
-        item = gtk.ToolItem()
-        label = gtk.Label()
+        item = Gtk.ToolItem()
+        label = Gtk.Label()
         label.set_text('%s ' % _('Lines'))
         item.add(label)
         colors_bar.insert(item, -1)
 
         # select color
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
         _fill_color.connect('notify::color', self.color_line_change)
         item.add(_fill_color)
         colors_bar.insert(item, -1)
 
         # Separator
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         colors_bar.insert(separator, -1)
         separator.show()
 
         ########################################################################
         # Line color
-        item = gtk.ToolItem()
-        label = gtk.Label()
+        item = Gtk.ToolItem()
+        label = Gtk.Label()
         label.set_text('%s ' % _('Background'))
         item.add(label)
         colors_bar.insert(item, -1)
 
         # select color
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
         _fill_color.connect('notify::color', self.color_back_change)
         item.add(_fill_color)
         colors_bar.insert(item, -1)
 
         # Separator
-        separator = gtk.SeparatorToolItem()
+        separator = Gtk.SeparatorToolItem()
         colors_bar.insert(separator, -1)
         separator.show()
 
         ########################################################################
         # Line color
-        item = gtk.ToolItem()
-        label = gtk.Label()
+        item = Gtk.ToolItem()
+        label = Gtk.Label()
         label.set_text('%s ' % _('Board'))
         item.add(label)
         colors_bar.insert(item, -1)
 
         # select color
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
         _fill_color.connect('notify::color', self.color_board_change)
         item.add(_fill_color)
