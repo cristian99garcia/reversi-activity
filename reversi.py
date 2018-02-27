@@ -23,8 +23,9 @@ import math
 import os
 import pygame
 import random
-import gtk
-
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 from gettext import gettext as _
 
 
@@ -49,7 +50,8 @@ player_numbers_to_piece_names = [None, "White", "Black"]
 
 
 def load_sound(relative_path_name):
-    full_path_name = os.path.abspath(os.path.join('data', relative_path_name))
+    full_path_name = os.path.abspath(
+            os.path.join('data',relative_path_name))
     sound = pygame.mixer.Sound(full_path_name)
     return sound
 
@@ -826,8 +828,8 @@ class ReversiController:
 
         while True:
             # Process events
-            while gtk.events_pending():
-                gtk.main_iteration()
+            while Gtk.events_pending():
+                Gtk.main_iteration()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
