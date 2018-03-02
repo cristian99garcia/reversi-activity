@@ -256,9 +256,9 @@ class ReversiActivity(activity.Activity):
         self.sound_enable = not self.sound_enable
         self.game.change_sound(self.sound_enable)
         if not self.sound_enable:
-            button.set_icon('speaker-muted-000')
+            button.set_icon_name('speaker-muted-000')
             button.set_tooltip(_('No sound'))
         else:
-            button.set_icon('speaker-muted-100')
+            button.set_icon_name('speaker-muted-100')
             button.set_tooltip(_('Sound'))
 
