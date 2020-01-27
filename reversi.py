@@ -340,18 +340,18 @@ class PlayerView:
                     piece_count -= 1
         
     def create_mini_piece_image(self, piece_name):
-        width = (self.rect.width - 20) / 5
+        width = (self.rect.width - 20) // 5
 
         image = pygame.Surface((width, width))
         image.fill(background_color)
 
         if piece_name == "Black":
-            pygame.draw.circle(image, BLACK, (width/2, width/2), width/2)
+            pygame.draw.circle(image, BLACK, (width//2, width//2), width//2)
         elif piece_name == "White":
             if WHITE == (255, 255, 255):
-                pygame.draw.circle(image, (0, 0, 0), (width/2, width/2), width/2, 2)
+                pygame.draw.circle(image, (0, 0, 0), (width//2, width//2), width//2, 2)
             else:
-                pygame.draw.circle(image, WHITE, (width/2, width/2), width/2)
+                pygame.draw.circle(image, WHITE, (width//2, width//2), width//2)
             
         return image
         
@@ -714,8 +714,8 @@ class ReversiController:
                     
     def play_sound(self, sound_name):
         if self.sound_enable:
-            if not self.sounds.has_key(sound_name):
-                print "ReversiController.play_sound(\"%s\") - WARNING, sound does not exist!" % str(sound_name)
+            if sound_name not in self.sounds:
+                print("ReversiController.play_sound(\"%s\") - WARNING, sound does not exist!" % str(sound_name))
             else:
                 sound = self.sounds[sound_name]
                 sound.play()
@@ -804,7 +804,7 @@ class ReversiController:
             sound_info = pygame.mixer.get_init()
             if sound_info:
                 self.use_sounds = True
-                print "sound_info = %s" % str(sound_info)
+                print("sound_info = %s" % str(sound_info))
         
         # Load sounds
         if self.use_sounds:
