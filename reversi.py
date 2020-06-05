@@ -31,8 +31,8 @@ from gettext import gettext as _
 
 # Immutable Globals / Settings
 screen_size = (1200, 825)
-background_color = (255, 255, 255)
-background_board_color = (255, 255, 255)
+background_color = (0, 100, 0)
+background_board_color = (0, 0, 255)
 cell_padding_color = (0, 0, 0)
 available_cell_color = (0, 0, 0)
 player_view_outline_color = (0, 0, 0)
@@ -88,10 +88,7 @@ class CellView(pygame.sprite.Sprite):
         if color == "Black":
             pygame.draw.circle(self.image, BLACK, pos, int(piece_width / 2))
         elif color == "White":
-            if WHITE == (255, 255, 255):
-                pygame.draw.circle(self.image, (0, 0, 0), pos, int(piece_width / 2), int(border_size))
-            else:
-                pygame.draw.circle(self.image, WHITE, pos, int(piece_width / 2))
+            pygame.draw.circle(self.image, WHITE, pos, int(piece_width / 2))
     
     def show_no_piece(self):
         """Clears the cell, showing no piece at all."""
@@ -348,10 +345,7 @@ class PlayerView:
         if piece_name == "Black":
             pygame.draw.circle(image, BLACK, (width//2, width//2), width//2)
         elif piece_name == "White":
-            if WHITE == (255, 255, 255):
-                pygame.draw.circle(image, (0, 0, 0), (width//2, width//2), width//2, 2)
-            else:
-                pygame.draw.circle(image, WHITE, (width//2, width//2), width//2)
+            pygame.draw.circle(image, WHITE, (width//2, width//2), width//2)
             
         return image
         
