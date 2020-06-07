@@ -183,6 +183,11 @@ class ReversiActivity(activity.Activity):
         # select color
         item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
+        c = Gdk.Color(
+            red = 0,
+            green = 25700,
+            blue = 0)
+        _fill_color.set_color(c)
         _fill_color.connect('notify::color', self.color_back_change)
         item.add(_fill_color)
         colors_bar.insert(item, -1)
@@ -203,6 +208,11 @@ class ReversiActivity(activity.Activity):
         # select color
         item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
+        c = Gdk.Color(
+            red = 0,
+            green = 0,
+            blue = 65535)
+        _fill_color.set_color(c)
         _fill_color.connect('notify::color', self.color_board_change)
         item.add(_fill_color)
         colors_bar.insert(item, -1)
