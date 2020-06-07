@@ -26,9 +26,9 @@ class ReversiActivity(activity.Activity):
         self.sound_enable = True
         self.game = reversi.ReversiController(self)
         self.game.canvas = sugargame.canvas.PygameCanvas(
-                 self,
-                 main=self.game.run,
-                 modules=[pygame.display, pygame.font])
+            self,
+            main=self.game.run,
+            modules=[pygame.display, pygame.font])
         self.set_canvas(self.game.canvas)
         self.game.canvas.grab_focus()
         self.build_toolbar()
@@ -62,14 +62,14 @@ class ReversiActivity(activity.Activity):
         toolbar_box.toolbar.insert(separator, -1)
         separator.show()
 
-        #current
+        # current
         item = Gtk.ToolItem()
         label = Gtk.Label()
         label.set_text(' %s ' % _('Current player:'))
         item.add(label)
         toolbar_box.toolbar.insert(item, -1)
 
-        #player
+        # player
         item = Gtk.ToolItem()
         self.current_label = Gtk.Label()
         self.current_label.set_text(' %s' % 1)
@@ -102,7 +102,7 @@ class ReversiActivity(activity.Activity):
 
         colors_bar = Gtk.Toolbar()
 
-        ########################################################################
+        ######################################################################
         # Point color
         item = Gtk.ToolItem()
         label = Gtk.Label()
@@ -114,9 +114,9 @@ class ReversiActivity(activity.Activity):
         item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
         c = Gdk.Color(
-            red = 65535,
-            green = 65535,
-            blue = 65535)
+            red=65535,
+            green=65535,
+            blue=65535)
         _fill_color.set_color(c)
         _fill_color.connect('notify::color', self.color_player1_change)
         item.add(_fill_color)
@@ -127,7 +127,7 @@ class ReversiActivity(activity.Activity):
         colors_bar.insert(separator, -1)
         separator.show()
 
-        ########################################################################
+        ######################################################################
         # Back color
         item = Gtk.ToolItem()
         label = Gtk.Label()
@@ -139,9 +139,9 @@ class ReversiActivity(activity.Activity):
         item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
         c = Gdk.Color(
-            red = 0,
-            green = 0,
-            blue = 0)
+            red=0,
+            green=0,
+            blue=0)
         _fill_color.set_color(c)
         _fill_color.connect('notify::color', self.color_player2_change)
         item.add(_fill_color)
@@ -152,7 +152,7 @@ class ReversiActivity(activity.Activity):
         colors_bar.insert(separator, -1)
         separator.show()
 
-        ########################################################################
+        ######################################################################
         # Line color
         item = Gtk.ToolItem()
         label = Gtk.Label()
@@ -172,7 +172,7 @@ class ReversiActivity(activity.Activity):
         colors_bar.insert(separator, -1)
         separator.show()
 
-        ########################################################################
+        ######################################################################
         # Line color
         item = Gtk.ToolItem()
         label = Gtk.Label()
@@ -184,9 +184,9 @@ class ReversiActivity(activity.Activity):
         item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
         c = Gdk.Color(
-            red = 0,
-            green = 25700,
-            blue = 0)
+            red=0,
+            green=25700,
+            blue=0)
         _fill_color.set_color(c)
         _fill_color.connect('notify::color', self.color_back_change)
         item.add(_fill_color)
@@ -197,7 +197,7 @@ class ReversiActivity(activity.Activity):
         colors_bar.insert(separator, -1)
         separator.show()
 
-        ########################################################################
+        ######################################################################
         # Line color
         item = Gtk.ToolItem()
         label = Gtk.Label()
@@ -209,19 +209,19 @@ class ReversiActivity(activity.Activity):
         item = Gtk.ToolItem()
         _fill_color = ColorToolButton()
         c = Gdk.Color(
-            red = 0,
-            green = 0,
-            blue = 65535)
+            red=0,
+            green=0,
+            blue=65535)
         _fill_color.set_color(c)
         _fill_color.connect('notify::color', self.color_board_change)
         item.add(_fill_color)
         colors_bar.insert(item, -1)
 
-        ########################################################################
+        ######################################################################
         colors_bar.show_all()
         colors_button = ToolbarButton(label=_('Colors'),
-                page=colors_bar,
-                icon_name='toolbar-colors')
+                                      page=colors_bar,
+                                      icon_name='toolbar-colors')
         toolbox.toolbar.insert(colors_button, -1)
         colors_button.show()
 
@@ -254,9 +254,9 @@ class ReversiActivity(activity.Activity):
         self.game.set_board_color(new_color)
 
     def color_to_rgb(self, color):
-        r = color.red *255 / 65535
-        g = color.green *255 / 65535
-        b = color.blue *255 / 65535
+        r = color.red * 255 / 65535
+        g = color.green * 255 / 65535
+        b = color.blue * 255 / 65535
         return (r, g, b)
 
     def set_current_player(self, player):
@@ -271,4 +271,3 @@ class ReversiActivity(activity.Activity):
         else:
             button.set_icon_name('speaker-muted-100')
             button.set_tooltip(_('Sound'))
-
